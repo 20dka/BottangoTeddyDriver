@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32929.386
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BottangoTeddyDriver", "BottangoTeddyDriver\BottangoTeddyDriver.csproj", "{ECF11949-E3F6-454C-A7F3-CE9DB373B308}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AudioPPM", "AudioPPM\AudioPPM.csproj", "{F21FB090-CFEC-495D-9A8F-15C9E2DF5D13}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ECF11949-E3F6-454C-A7F3-CE9DB373B308}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECF11949-E3F6-454C-A7F3-CE9DB373B308}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECF11949-E3F6-454C-A7F3-CE9DB373B308}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECF11949-E3F6-454C-A7F3-CE9DB373B308}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F21FB090-CFEC-495D-9A8F-15C9E2DF5D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F21FB090-CFEC-495D-9A8F-15C9E2DF5D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F21FB090-CFEC-495D-9A8F-15C9E2DF5D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F21FB090-CFEC-495D-9A8F-15C9E2DF5D13}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C12F9E5-95C9-4A53-92D7-7AD1F83302DC}
+	EndGlobalSection
+EndGlobal
