@@ -39,5 +39,10 @@
         /// Whole period (all channels + sync idle) (mks)
         /// </summary>
         public int Period { get; set; }
+
+        /// <summary>
+        /// Suffix pattern
+        /// </summary>
+        public bool[] Suffix { get; set; }
     }
 }
