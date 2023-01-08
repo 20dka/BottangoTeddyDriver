@@ -152,6 +152,9 @@ namespace BottangoTeddyDriver
         private float[] sampleBuffer;
         private int sampleBufferStart;
         private bool isSampleBufferValid;
+        private float minPeakLen;
+        private float maxPeakLen;
+
         private float getSample(int i)
         {
             //Console.WriteLine($"requested sample {i}");
@@ -215,65 +218,21 @@ namespace BottangoTeddyDriver
 
             backgroundWorker.ReportProgress(4, "Processing samples");
 
-            float minPeakLen = (float)(SamplesPerMs * 0.65f); //750us
-            float maxPeakLen = (float)(SamplesPerMs * 2.1f); //1750us
+            minPeakLen = (float)(SamplesPerMs * 0.65f); //750us
+            maxPeakLen = (float)(SamplesPerMs * 2.1f); //1750us
 
             int i = 0;
 
             findSync(ref i);
             findSync(ref i);
 
+
             while (i < sampleCount)
             {
-                if (!findSync(ref i)) break; // find next sync
-
-                int syncstart = i;
-
-                if (findPeak(ref i) == -1) break;
-                int firstpeak = i;
-
-                KeyFrame frame = new KeyFrame((decimal)i / WaveFormat.SampleRate);
-
-                int peakIndex = 0;
-                int peakLen = 0;
-
-                do
-                {
-                    peakLen = findPeak(ref i);
-                    if (peakLen == -1) break;
-
-                    if (isSync(peakLen))
-                    {
-                        Console.WriteLine("found sync mid-frame at {0} ({1}s)", i, i / WaveFormat.SampleRate);
-                    }
-
-                    frame.Values[peakIndex] = map(peakLen, minPeakLen, maxPeakLen, 0, 1);
-
-                    frame.positions[peakIndex] = i - peakLen;
-                    frame.positions[peakIndex + 1] = i;
-
-                    if (frame.Values[peakIndex] < 0 || frame.Values[peakIndex] > 1) // invalid value, skip this
-                    {
-                        Console.WriteLine("skipped frame at {0} ({1}s)", i, i / WaveFormat.SampleRate);
-                        continue;
-                    }
-
-                    peakIndex++;
-                } while (peakIndex < KeyFrame.ChannelCount && peakLen < maxPeakLen * 1.2);
-
-                if (peakIndex == KeyFrame.ChannelCount && peakLen < maxPeakLen * 1.2) // valid frame
-                {
-                    frames.Add(frame);
-                }
-                else
-                {
-                    badFrames.Add(frame);
-                    badSyncs.Add(syncstart);
-                    //Console.WriteLine("invalid frame at {0} ({1}s)", i, i / WaveFormat.SampleRate);
-                }
-
                 int progress = (int)((float)i / sampleCount * 100);
-                backgroundWorker.ReportProgress(progress, "Analyzing samples");
+                backgroundWorker.ReportProgress(progress, $"{progress} - Analyzing samples");
+
+                if (!handleFrame(ref i)) break;
             }
 
             backgroundWorker.ReportProgress(99, "Normalizing frames");
@@ -284,7 +243,7 @@ namespace BottangoTeddyDriver
             {
                 Samples = null;
                 //Samples = new float[sampleCount];
-            
+
                 for (int f = 0; f < sampleCount; f++)
                 {
                     //Samples[f] = getSample(f);
@@ -292,6 +251,72 @@ namespace BottangoTeddyDriver
             }
 
             backgroundWorker.ReportProgress(100, "Done");
+        }
+
+        /// <summary>
+        /// find, process, and save a frame
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="skipSync"></param>
+        /// <returns>False if end of file is reached</returns>
+        private bool handleFrame(ref int i, bool skipSync = false)
+        {
+            if (!skipSync)
+            {
+                if (!findSync(ref i)) return false; // find next sync
+            }
+
+            int syncstart = i;
+
+            if (findPeak(ref i) == -1) return false;
+            int firstpeak = i;
+
+            KeyFrame frame = new KeyFrame((decimal)i / WaveFormat.SampleRate);
+
+            int peakIndex = 0;
+            int peakLen = 0;
+
+            do
+            {
+                peakLen = findPeak(ref i);
+                if (peakLen == -1) return false;
+
+                if (isSync(peakLen))
+                {
+                    Console.WriteLine("found sync mid-frame at {0} ({1}s)", i, i / WaveFormat.SampleRate);
+                    return handleFrame(ref i, true);
+                }
+
+                frame.Values[peakIndex] = map(peakLen, minPeakLen, maxPeakLen, 0, 1);
+
+                frame.positions[peakIndex] = i - peakLen;
+                frame.positions[peakIndex + 1] = i;
+
+                if (frame.Values[peakIndex] < 0 || frame.Values[peakIndex] > 1) // invalid value, skip this
+                {
+                    Console.WriteLine("skipped frame at {0} ({1}s)", i, i / WaveFormat.SampleRate);
+                    break;
+                }
+
+                peakIndex++;
+
+            } while (peakIndex < KeyFrame.ChannelCount && peakLen < maxPeakLen * 1.2);
+
+            if (peakIndex == KeyFrame.ChannelCount && peakLen < maxPeakLen * 1.2) // valid frame
+            {
+                //frame.Mouth = frame.Nose; //for goose tapes
+                frames.Add(frame);
+                return true;
+            }
+            else
+            {
+                badFrames.Add(frame);
+                badSyncs.Add(syncstart);
+                badSyncs.Add(firstpeak);
+                Console.WriteLine("invalid frame at {0} ({1}s)", i, i / WaveFormat.SampleRate);
+                return true;
+            }
+
         }
 
         private int findPeak(ref int start)
