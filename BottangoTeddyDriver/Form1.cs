@@ -465,5 +465,10 @@ namespace BottangoTeddyDriver
             microphone = new MicrophoneWrapper();
             microphone.Start(combo_animSourceSelect.Text);
         }
+
+        private void richTextBox1_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(e.LinkText);
+        }
     }
 }
