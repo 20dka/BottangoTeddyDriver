@@ -273,15 +273,11 @@ namespace BottangoTeddyDriver
 
         void dragCursor(MouseEventArgs e)
         {
-            if (samples == null) { _currentSample = 0; return; }
-
-            //int dragamount = e.X - dragCursorStart.X;
-
             int whichsampleonscreen = (int)Math.Round(scrollOffset + e.X / ZoomLevel);
 
             int oldSample = _currentSample;
 
-            _currentSample = Math.Min(Math.Max(whichsampleonscreen, 0), samples.Length);
+            _currentSample = Math.Max(whichsampleonscreen, 0);
 
             if (_currentSample != oldSample) // dont refresh if dragging left from 0
             {
