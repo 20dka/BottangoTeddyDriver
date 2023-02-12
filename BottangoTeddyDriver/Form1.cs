@@ -222,6 +222,11 @@ namespace BottangoTeddyDriver
                     }
                 case "Off":
                 default:
+                    _generator.setValues(0,0,0);
+
+                    trackBar1.Value = 0;
+                    trackBar2.Value = 0;
+                    trackBar3.Value = 0;
                     return;
             }
         }
@@ -449,7 +454,7 @@ namespace BottangoTeddyDriver
 
         #endregion
 
-        #region Microphone
+        #region Live audio input
 
         private MicrophoneWrapper microphone;
 

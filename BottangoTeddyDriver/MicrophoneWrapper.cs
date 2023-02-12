@@ -23,8 +23,8 @@ namespace BottangoTeddyDriver
         private Stopwatch mouthClosedStopwatch;
         public int noseLowerDelay = 800;
 
-        private short currentSample;
-        private short highestSample;
+        private float currentSample;
+        private float highestSample;
 
         public int selectedSourceIndex { get; private set; }
         public float Gain { get; set; } = 1.5f;
@@ -42,7 +42,6 @@ namespace BottangoTeddyDriver
             blinkTimer.Elapsed += BlinkTimer_Elapsed;
 
             mouthClosedStopwatch = new Stopwatch();
-
 
 
             microphone = new WaveIn();
@@ -64,23 +63,25 @@ namespace BottangoTeddyDriver
 
         private void speakerCapture_DataAvailable(object sender, WaveInEventArgs e)
         {
-            currentSample = 0;
 
             int bytesPerSample = speakerCapture.WaveFormat.BitsPerSample / 8;
             int samplesRecorded = e.BytesRecorded / bytesPerSample;
 
-            byte[] buffer = e.Buffer;
+            float[] samples = new float[samplesRecorded];
 
-            for (int index = 0; index < e.BytesRecorded; index += bytesPerSample)
+            currentSample = 0;
+
+
+            for (int index = 0; index < samplesRecorded; index++)
             {
-                float samplef = BitConverter.ToSingle(buffer, index);
+                float samplef = BitConverter.ToSingle(e.Buffer, index * bytesPerSample);
 
-                short sample = (short)(samplef * short.MaxValue);
-                //float sample32 = sample / 32768f;
+                samples[index] = samplef;
+            }
 
-
-
-                sample = Math.Abs(sample);
+            for (int index = 0; index < samplesRecorded; index++)
+            {
+                float sample = Math.Abs(samples[index]);
 
                 if (sample > currentSample) currentSample = sample;
             }
@@ -103,16 +104,13 @@ namespace BottangoTeddyDriver
             {
                 short sample = Math.Abs((short)((buffer[index + 1] << 8) |
                                         buffer[index]));
-                //float sample32 = sample / 32768f;
+                float sample32 = sample / 32768f;
 
-                if (sample > currentSample) currentSample = sample;
+                if (sample > currentSample) currentSample = sample32;
             }
 
 
             if (currentSample > highestSample) highestSample = currentSample;
-
-            //Console.WriteLine(currentSample*100);
-            //Console.WriteLine(samplesRecorded);
         }
 
         public void Start(string sourceName)
@@ -141,7 +139,6 @@ namespace BottangoTeddyDriver
             {
                 blinkStopwatch.Reset();
                 blinkTimer.Interval = blinkRandom.Next(10000, 30000);
-                //blinkTimer.Interval = blinkRandom.Next(1000, 2000);
                 blinkTimer.Start();
             }
 
@@ -162,7 +159,7 @@ namespace BottangoTeddyDriver
             }
             else
             {
-                Console.WriteLine(mouthClosedStopwatch.ElapsedMilliseconds);
+                //Console.WriteLine(mouthClosedStopwatch.ElapsedMilliseconds);
                 if (mouthWasOpen)
                 {
                     mouthClosedStopwatch.Restart();
@@ -172,7 +169,7 @@ namespace BottangoTeddyDriver
                 }
                 else if (mouthClosedStopwatch.ElapsedMilliseconds > 0 && mouthClosedStopwatch.ElapsedMilliseconds < noseLowerDelay)
                 {
-                    nose = 0.6f * ((noseLowerDelay - mouthClosedStopwatch.ElapsedMilliseconds)/ (float)noseLowerDelay);
+                    nose = 0.6f * ((noseLowerDelay - mouthClosedStopwatch.ElapsedMilliseconds) / (float)noseLowerDelay);
                 }
                 else
                 {
@@ -181,7 +178,7 @@ namespace BottangoTeddyDriver
             }
 
 
-            return new float[]{ eyes, mouth, mouth, 0.5f, eyes, nose, mouth };
+            return new float[] { eyes, mouth, mouth, 0.5f, eyes, nose, mouth };
         }
 
         internal void SelectSource(string sourceName)
@@ -192,6 +189,7 @@ namespace BottangoTeddyDriver
                     selectedSourceIndex = 1;
                     captures[0].StopRecording();
                     captures[1].StartRecording();
+                    highestSample = 0;
                     break;
                 case "microphone":
                     selectedSourceIndex = 0;
