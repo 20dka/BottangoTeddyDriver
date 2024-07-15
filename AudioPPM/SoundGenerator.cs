@@ -15,13 +15,11 @@ namespace AudioPPM
     /// </summary>
     public class PpmGenerator : IDisposable
     {
-        private readonly MixingSampleProvider _mixingSampleProvider;
-        private readonly SavingWaveProvider _savingWaveProvider;
+
         private readonly IWavePlayer _player;
         private readonly PpmProvider _ppmProvider;
-        private readonly BufferedWaveProvider _outputBufferedProvider;
-        private readonly BufferedWaveProvider _speakerBufferedProvider;
-        private readonly WasapiLoopbackCapture _speakerCapture;
+        private readonly BufferedWaveProvider loopbackBufferedProvider;
+        private readonly WasapiLoopbackCapture loopbackCapture;
         private readonly WaveFormat _waveFormat;
         private readonly bool hasLoopback;
         private VolumeSampleProvider _volumeProvider;
@@ -34,45 +32,51 @@ namespace AudioPPM
         /// <param name="device">Selected output device</param>
         public PpmGenerator(byte channelsCount, PpmProfile ppmProfile, MMDevice device, bool wantLoopback)
         {
-            _speakerCapture = new WasapiLoopbackCapture();
+            int audioChannelCount = device.AudioClient.MixFormat.Channels;
 
-            //TODO: Create capture of output device for a lack of a better solution for saving to file :)))
+            // set up loopback provider:
+            loopbackCapture = new WasapiLoopbackCapture();
 
-            _waveFormat = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2);
+            var loopbackWaveformat = new WaveFormat();
 
-            if (wantLoopback && _speakerCapture.WaveFormat.Channels > 1) // we can't use mono as the mixing source
+            if (wantLoopback)
             {
-                _waveFormat = _speakerCapture.WaveFormat;
+                loopbackWaveformat = loopbackCapture.WaveFormat;
                 hasLoopback = true;
             }
 
-            // set up left channel:
-            _speakerBufferedProvider = new BufferedWaveProvider(_waveFormat);
-            var monoLoopbackProvider = _speakerBufferedProvider.ToSampleProvider().ToMono(); // stereo -> mono -> stereo (mixed left)
-            //_mixingSampleProvider.AddMixerInput(bufferedLeftOnly);
-            _speakerCapture.DataAvailable += _speakerCapture_DataAvailable;
-            if (hasLoopback) _speakerCapture.StartRecording();
+            loopbackBufferedProvider = new BufferedWaveProvider(loopbackWaveformat);
+            var monoLoopbackProvider = loopbackBufferedProvider.ToSampleProvider().ToMono(); // stereo -> mono
+            loopbackCapture.DataAvailable += _speakerCapture_DataAvailable;
+            if (hasLoopback) loopbackCapture.StartRecording();
 
             // set up right channel:
-            _ppmProvider = new PpmProvider(channelsCount, ppmProfile, _waveFormat);
-            //_mixingSampleProvider.AddMixerInput(_ppmProvider); // right channel
+            _ppmProvider = new PpmProvider(channelsCount, ppmProfile, loopbackWaveformat);
+            _waveFormat = new WaveFormatExtensible(loopbackWaveformat.SampleRate, 32, audioChannelCount);
 
-
-            MultiplexingSampleProvider _multiplexingSampleProvider = new MultiplexingSampleProvider(new ISampleProvider[] { monoLoopbackProvider, _ppmProvider }, 2);
+            MultiplexingSampleProvider _multiplexingSampleProvider = new MultiplexingSampleProvider(new ISampleProvider[] { monoLoopbackProvider, _ppmProvider }, _waveFormat);
 
             _multiplexingSampleProvider.ConnectInputToOutput(0, 0);
             _multiplexingSampleProvider.ConnectInputToOutput(1, 1);
-
+            
             _volumeProvider = new VolumeSampleProvider(_multiplexingSampleProvider);
             _volumeProvider.Volume = 0;
 
-            //_savingWaveProvider = new SavingWaveProvider(_volumeProvider.ToWaveProvider(), "test.wav");
-
-
-            //_outputBufferedProvider = new BufferedWaveProvider(_waveFormat);
-
             _player = new  WasapiOut(device, AudioClientShareMode.Shared, false, 30);
             _player.Init(_volumeProvider);
+        }
+
+        public void setLoopback(bool enable)
+        {
+            loopbackBufferedProvider.ClearBuffer();
+            if (enable)
+            {
+                loopbackCapture.StartRecording();
+            }
+            else
+            {
+                loopbackCapture.StopRecording();
+            }
         }
 
         public void setVolume(float v)
@@ -82,11 +86,11 @@ namespace AudioPPM
 
         private void _speakerCapture_DataAvailable(object sender, WaveInEventArgs e)
         {
-            _speakerBufferedProvider.AddSamples(e.Buffer, 0, e.BytesRecorded);
+            loopbackBufferedProvider.AddSamples(e.Buffer, 0, e.BytesRecorded);
         }
 
         /// <summary>
-        /// Return list of avaliable to output devises
+        /// Return list of avaliable to output devices
         /// </summary>
         /// <returns></returns>
         public static MMDeviceCollection GetDevices()
@@ -121,8 +125,7 @@ namespace AudioPPM
         public void Stop()
         {
             _player.Stop();
-            _savingWaveProvider?.Dispose();
-            _speakerCapture?.StopRecording();
+            loopbackCapture?.StopRecording();
         }
 
 

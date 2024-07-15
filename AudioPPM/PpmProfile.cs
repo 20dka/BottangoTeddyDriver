@@ -43,6 +43,11 @@
         /// <summary>
         /// Suffix pattern
         /// </summary>
+        public byte ChannelCount { get; set; }
+
+        /// <summary>
+        /// Suffix pattern
+        /// </summary>
         public bool[] Suffix { get; set; }
     }
 }

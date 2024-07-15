@@ -22,7 +22,7 @@ namespace BottangoTeddyDriver
 
     class BottangoWrapper
     {
-        internal static readonly object apiVersion = "0.5.3a";
+        internal static readonly object apiVersion = "0.6.3a";
         TcpClient client;
 
         Timer networkTimer;

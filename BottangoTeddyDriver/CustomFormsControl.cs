@@ -168,6 +168,8 @@ namespace BottangoTeddyDriver
         public void AddFrames(List<KeyFrame> badFrames)
         {
             frames.AddRange(badFrames);
+
+            frames.Sort((a, b) => a.Time.CompareTo(b.Time));
         }
 
         public void AddMarkers(List<int> badSyncs)
@@ -334,7 +336,7 @@ namespace BottangoTeddyDriver
             }
 
 
-            newZoom = Math.Max(newZoom, 0.001f);
+            newZoom = Math.Max(newZoom, 0.0001f);
 
             if (ZoomLevel != newZoom)
             {
@@ -578,9 +580,9 @@ namespace BottangoTeddyDriver
         private void DrawFrameGraphs(PaintEventArgs e)
         {
             if (frames == null || frames.Count == 0) return;
-            frameCurves = new PointF[frames[0].Values.Length][];
+            frameCurves = new PointF[KeyFrame.ChannelCount][];
 
-            for (int f = 0; f < frameCurves.Length; f++)
+            for (int f = 0; f < KeyFrame.ChannelCount; f++)
             {
                 List<PointF> visiblePoints = new List<PointF>();
                 float top = GraphRectangle.Y + GraphRectangle.Height * ((float)f / frameCurves.Length)   +10;
@@ -588,18 +590,16 @@ namespace BottangoTeddyDriver
 
                 for (int i = 0; i < frames.Count; i++)
                 {
-
                     int sample = frames[i].positions[0];
 
-
                     float xpos = samplesSpacing * (sample - scrollOffset);
+                    
+                    //if (xpos > 0 && xpos < GraphRectangle.Width)
                     if (xpos > -GraphRectangle.Width / 2 && xpos < GraphRectangle.Width * 1.5)
                     {
-
                         float val = frames[i].Values[f];
-
-
                         float ypos = map(val, 1, 0, top, bottom);
+
                         var point = new PointF(xpos, ypos);
                         visiblePoints.Add(point);
                     }
@@ -612,20 +612,21 @@ namespace BottangoTeddyDriver
             }
 
             Brush[] bruhs = {
-                    new SolidBrush(Color.Red),
-                    new SolidBrush(Color.Green),
-                    new SolidBrush(Color.Blue),
-                    new SolidBrush(Color.Yellow),
-                    new SolidBrush(Color.Purple),
-                    new SolidBrush(Color.DarkOrange),
-                    new SolidBrush(Color.DarkViolet)
-                };
+                new SolidBrush(Color.Red),
+                new SolidBrush(Color.Green),
+                new SolidBrush(Color.Blue),
+                new SolidBrush(Color.Yellow),
+                new SolidBrush(Color.Purple),
+                new SolidBrush(Color.DarkOrange),
+                new SolidBrush(Color.DarkViolet)
+            };
 
 
             for (int f = 0; f < frameCurves.Length; f++)
             {
                 if (frameCurves[f].Length > 1)
-                e.Graphics.FillPolygon(bruhs[f], frameCurves[f]);
+                    e.Graphics.FillPolygon(bruhs[f], frameCurves[f]);
+                    //e.Graphics.DrawCurve(new Pen(bruhs[f], 2), frameCurves[f], 0);
             }
         }
 

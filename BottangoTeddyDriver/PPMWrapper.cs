@@ -11,34 +11,41 @@ namespace BottangoTeddyDriver
 {
     class PPMWrapper
     {
-        private const int CHANNELS_COUNT = 8;
-        readonly byte[] _channelValues;
-
-        PpmProfile ruxpin = new PpmProfile()
-        {
-            PauseDuration = 250,
-            Polarity = PpmPolarity.HIGH,
-            MinChannelDuration = 750 + 100,
-            MaxChannelDuration = 1750,
-            Period = 20000
-        };
+        PpmProfile _profile;
+        byte _channelCount = 8;
+        private byte[] _channelValues;
+        
 
         PpmGenerator _generator;
 
         public PPMWrapper()
         {
-            _channelValues = new byte[CHANNELS_COUNT];
-
+            _channelValues = new byte[_channelCount];
         }
 
-        public void Start(MMDevice outputDevice, bool wantLoopback)
+        public void Start(MMDevice outputDevice, PpmProfile profile, bool wantLoopback)
         {
             if (outputDevice == null)
             {
                 throw new ArgumentNullException("No output device specified.");
             }
 
-            _generator = new PpmGenerator(CHANNELS_COUNT, ruxpin, outputDevice, wantLoopback);
+            _profile = profile;
+
+            _channelCount = 8;
+            if (profile.Suffix != null) _channelCount += Convert.ToByte(profile.Suffix.Length);
+
+            _channelValues = new byte[_channelCount];
+
+            if (profile.Suffix != null)
+            {
+                for (int i = 0; i < profile.Suffix.Length; i++)
+                {
+                    _channelValues[i + 8] = profile.Suffix[i] ? (byte)255 : (byte)0;
+                }
+            }
+
+            _generator = new PpmGenerator(_channelCount, profile, outputDevice, wantLoopback);
             _generator.SetValues(_channelValues);
             _generator.Start();
         }
@@ -88,6 +95,11 @@ namespace BottangoTeddyDriver
         internal void setVolume(float v)
         {
             _generator?.setVolume(v);
+        }
+
+        internal void setLoopback(bool enable)
+        {
+            _generator?.setLoopback(enable);
         }
     }
 }

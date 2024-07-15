@@ -48,7 +48,8 @@ namespace BottangoTeddyDriver
             }
             try
             {
-                _generator.Start(_audioDevices[listboxAudioDevices.SelectedIndex], check_loopback.Checked);
+                PpmProfile profile = check_goose.Checked ? StandardProfiles.goose : StandardProfiles.ruxpin;
+                _generator.Start(_audioDevices[listboxAudioDevices.SelectedIndex], profile, check_loopback.Checked);
                 _generator.setVolume(track_volume.Value / 100f);
                 SetPlaying(true);
                 animTimer.Start();
@@ -91,6 +92,8 @@ namespace BottangoTeddyDriver
             listboxAudioDevices.Items.Clear();
             _audioDevices = PpmGenerator.GetDevices().OrderBy(x => x.FriendlyName).ToList();
 
+            var asiodevices = NAudio.Wave.DirectSoundOut.Devices;
+
             foreach (var device in _audioDevices)
                 listboxAudioDevices.Items.Add($"{device.FriendlyName} - {device.State}");
 
@@ -117,7 +120,7 @@ namespace BottangoTeddyDriver
 
         private void checkLoopback_CheckedChanged(object sender, EventArgs e)
         {
-
+            _generator.setLoopback(check_loopback.Checked);
         }
 
         private void track_volume_Scroll(object sender, EventArgs e)
@@ -138,7 +141,10 @@ namespace BottangoTeddyDriver
         {
             _bottango = new BottangoWrapper();
 
-            _bottango.Connect();
+            if (_bottango.Connect())
+            {
+                combo_animSourceSelect.SelectedItem = "Bottango";
+            }
         }
 
         private void btnNetworkStop_Click(object sender, EventArgs e)
@@ -287,7 +293,7 @@ namespace BottangoTeddyDriver
 
             deerLineChart2.SetFrames(parser.frames);
             //deerLineChart2.AddFrames(parser.badFrames);
-            deerLineChart2.AddMarkers(parser.badSyncs);
+            //deerLineChart2.AddMarkers(parser.badSyncs);
 
             deerLineChart2.FramesVisible = false;
             //deerLineChart2.MarkersVisible = false;

@@ -30,14 +30,19 @@ namespace BottangoTeddyDriver
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.btnOutputStart = new System.Windows.Forms.Button();
             this.btnAudioStop = new System.Windows.Forms.Button();
             this.listboxAudioDevices = new System.Windows.Forms.ListBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
             this.combo_animSourceSelect = new System.Windows.Forms.ComboBox();
+            this.trackBar3 = new System.Windows.Forms.TrackBar();
             this.track_volume = new System.Windows.Forms.TrackBar();
+            this.check_goose = new System.Windows.Forms.CheckBox();
             this.check_loopback = new System.Windows.Forms.CheckBox();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
+            this.trackBar2 = new System.Windows.Forms.TrackBar();
             this.label_volume = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -47,9 +52,6 @@ namespace BottangoTeddyDriver
             this.listbox_NetworkLog = new System.Windows.Forms.ListBox();
             this.btn_NetworkStop = new System.Windows.Forms.Button();
             this.animTimer = new System.Windows.Forms.Timer(this.components);
-            this.trackBar1 = new System.Windows.Forms.TrackBar();
-            this.trackBar2 = new System.Windows.Forms.TrackBar();
-            this.trackBar3 = new System.Windows.Forms.TrackBar();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.check_keepSamples = new System.Windows.Forms.CheckBox();
@@ -74,11 +76,11 @@ namespace BottangoTeddyDriver
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.deerLineChart2 = new BottangoTeddyDriver.DeerLineChart();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.track_volume)).BeginInit();
-            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.track_peakThreshold)).BeginInit();
             this.tabControl1.SuspendLayout();
@@ -129,6 +131,7 @@ namespace BottangoTeddyDriver
             this.groupBox1.Controls.Add(this.combo_animSourceSelect);
             this.groupBox1.Controls.Add(this.trackBar3);
             this.groupBox1.Controls.Add(this.track_volume);
+            this.groupBox1.Controls.Add(this.check_goose);
             this.groupBox1.Controls.Add(this.check_loopback);
             this.groupBox1.Controls.Add(this.trackBar1);
             this.groupBox1.Controls.Add(this.trackBar2);
@@ -137,7 +140,7 @@ namespace BottangoTeddyDriver
             this.groupBox1.Controls.Add(this.btnOutputStart);
             this.groupBox1.Controls.Add(this.listboxAudioDevices);
             this.groupBox1.Controls.Add(this.btnAudioStop);
-            this.groupBox1.Location = new System.Drawing.Point(755, 12);
+            this.groupBox1.Location = new System.Drawing.Point(835, 12);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(617, 257);
             this.groupBox1.TabIndex = 3;
@@ -169,6 +172,17 @@ namespace BottangoTeddyDriver
             this.combo_animSourceSelect.Text = "Off";
             this.combo_animSourceSelect.SelectedIndexChanged += new System.EventHandler(this.combo_animSourceSelect_SelectedIndexChanged);
             // 
+            // trackBar3
+            // 
+            this.trackBar3.Enabled = false;
+            this.trackBar3.Location = new System.Drawing.Point(566, 12);
+            this.trackBar3.Maximum = 255;
+            this.trackBar3.Name = "trackBar3";
+            this.trackBar3.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trackBar3.Size = new System.Drawing.Size(45, 239);
+            this.trackBar3.TabIndex = 4;
+            this.trackBar3.TickFrequency = 10;
+            // 
             // track_volume
             // 
             this.track_volume.Location = new System.Drawing.Point(376, 19);
@@ -182,6 +196,15 @@ namespace BottangoTeddyDriver
             this.track_volume.Value = 10;
             this.track_volume.Scroll += new System.EventHandler(this.track_volume_Scroll);
             // 
+            // check_goose
+            // 
+            this.check_goose.Location = new System.Drawing.Point(6, 71);
+            this.check_goose.Name = "check_goose";
+            this.check_goose.Size = new System.Drawing.Size(74, 17);
+            this.check_goose.TabIndex = 4;
+            this.check_goose.Text = "Goose";
+            this.check_goose.UseVisualStyleBackColor = true;
+            // 
             // check_loopback
             // 
             this.check_loopback.Location = new System.Drawing.Point(6, 48);
@@ -193,6 +216,28 @@ namespace BottangoTeddyDriver
         "");
             this.check_loopback.UseVisualStyleBackColor = true;
             this.check_loopback.CheckedChanged += new System.EventHandler(this.checkLoopback_CheckedChanged);
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.Enabled = false;
+            this.trackBar1.Location = new System.Drawing.Point(464, 12);
+            this.trackBar1.Maximum = 255;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trackBar1.Size = new System.Drawing.Size(45, 239);
+            this.trackBar1.TabIndex = 4;
+            this.trackBar1.TickFrequency = 10;
+            // 
+            // trackBar2
+            // 
+            this.trackBar2.Enabled = false;
+            this.trackBar2.Location = new System.Drawing.Point(515, 12);
+            this.trackBar2.Maximum = 255;
+            this.trackBar2.Name = "trackBar2";
+            this.trackBar2.Orientation = System.Windows.Forms.Orientation.Vertical;
+            this.trackBar2.Size = new System.Drawing.Size(45, 239);
+            this.trackBar2.TabIndex = 4;
+            this.trackBar2.TickFrequency = 10;
             // 
             // label_volume
             // 
@@ -286,39 +331,6 @@ namespace BottangoTeddyDriver
             this.animTimer.Interval = 16;
             this.animTimer.Tick += new System.EventHandler(this.animTimer_Tick);
             // 
-            // trackBar1
-            // 
-            this.trackBar1.Enabled = false;
-            this.trackBar1.Location = new System.Drawing.Point(464, 12);
-            this.trackBar1.Maximum = 255;
-            this.trackBar1.Name = "trackBar1";
-            this.trackBar1.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBar1.Size = new System.Drawing.Size(45, 239);
-            this.trackBar1.TabIndex = 4;
-            this.trackBar1.TickFrequency = 10;
-            // 
-            // trackBar2
-            // 
-            this.trackBar2.Enabled = false;
-            this.trackBar2.Location = new System.Drawing.Point(515, 12);
-            this.trackBar2.Maximum = 255;
-            this.trackBar2.Name = "trackBar2";
-            this.trackBar2.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBar2.Size = new System.Drawing.Size(45, 239);
-            this.trackBar2.TabIndex = 4;
-            this.trackBar2.TickFrequency = 10;
-            // 
-            // trackBar3
-            // 
-            this.trackBar3.Enabled = false;
-            this.trackBar3.Location = new System.Drawing.Point(566, 12);
-            this.trackBar3.Maximum = 255;
-            this.trackBar3.Name = "trackBar3";
-            this.trackBar3.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.trackBar3.Size = new System.Drawing.Size(45, 239);
-            this.trackBar3.TabIndex = 4;
-            this.trackBar3.TickFrequency = 10;
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.check_keepSamples);
@@ -347,9 +359,9 @@ namespace BottangoTeddyDriver
             this.check_keepSamples.AutoSize = true;
             this.check_keepSamples.Location = new System.Drawing.Point(11, 139);
             this.check_keepSamples.Name = "check_keepSamples";
-            this.check_keepSamples.Size = new System.Drawing.Size(150, 17);
+            this.check_keepSamples.Size = new System.Drawing.Size(92, 17);
             this.check_keepSamples.TabIndex = 7;
-            this.check_keepSamples.Text = "Keep samples (uses RAM)";
+            this.check_keepSamples.Text = "Keep samples";
             this.check_keepSamples.UseVisualStyleBackColor = true;
             // 
             // check_flipSamples
@@ -564,7 +576,7 @@ namespace BottangoTeddyDriver
             this.deerLineChart2.Name = "deerLineChart2";
             this.deerLineChart2.PeakTreshold = 0F;
             this.deerLineChart2.SampleRate = 0;
-            this.deerLineChart2.Size = new System.Drawing.Size(1360, 377);
+            this.deerLineChart2.Size = new System.Drawing.Size(1440, 377);
             this.deerLineChart2.TabIndex = 9;
             this.deerLineChart2.Text = "deerLineChart2";
             this.deerLineChart2.ZoomLevel = 0.05D;
@@ -573,7 +585,7 @@ namespace BottangoTeddyDriver
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1384, 741);
+            this.ClientSize = new System.Drawing.Size(1464, 741);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.deerLineChart2);
             this.Controls.Add(this.groupBox1);
@@ -584,12 +596,12 @@ namespace BottangoTeddyDriver
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.track_volume)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar3)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.track_peakThreshold)).EndInit();
@@ -645,6 +657,7 @@ namespace BottangoTeddyDriver
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.CheckBox check_goose;
         private System.Windows.Forms.TabPage tabPage4;
         private System.Windows.Forms.RichTextBox richTextBox1;
     }
