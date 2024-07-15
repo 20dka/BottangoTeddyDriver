@@ -22,7 +22,7 @@ namespace BottangoTeddyDriver
 
     class BottangoWrapper
     {
-        internal static readonly object apiVersion = "0.6.3a";
+        internal static readonly object apiVersion = "0.6.4a";
         TcpClient client;
 
         Timer networkTimer;
@@ -665,25 +665,25 @@ namespace BottangoTeddyDriver
                         // duration of curve
                         uint duration = uint.Parse(args[3]);
 
-                        // start Y is int 0-1000
-                        float startMovement = int.Parse(args[4]) / 1000f;
+                        // start Y is int 0-8192
+                        float startMovement = int.Parse(args[4]) / 8192f;
 
                         int startControlX = int.Parse(args[5]);
 
-                        float startControlY = int.Parse(args[6]) / 1000f;
+                        float startControlY = int.Parse(args[6]) / 8192f;
 
-                        float endMovement = int.Parse(args[7]) / 1000f;
+                        float endMovement = int.Parse(args[7]) / 8192f;
 
                         int endControlX = int.Parse(args[8]);
 
-                        float endControlY = int.Parse(args[9]) / 1000f;
+                        float endControlY = int.Parse(args[9]) / 8192f;
 
                         _wrapper.effectorPool.addCurveToEffector(args[1], new Curve(startTime, duration, startMovement, startControlX, startControlY, endMovement, endControlX, endControlY));
                         break;
                     }
                 case "sCI":
                     {
-                        float endMovement = int.Parse(args[2]) / 1000f;
+                        float endMovement = int.Parse(args[2]) / 8192f;
                         _wrapper.effectorPool.addCurveToEffector(args[1], new Curve(Time.getTimeOnServer(), 0, endMovement, 0, 0, endMovement, 0, 0));
                         break;
                     }
