@@ -20,7 +20,6 @@ namespace AudioPPM
         private readonly PpmProvider _ppmProvider;
         private readonly BufferedWaveProvider loopbackBufferedProvider;
         private readonly WasapiLoopbackCapture loopbackCapture;
-        private readonly WaveFormat _waveFormat;
         private readonly bool hasLoopback;
         private VolumeSampleProvider _volumeProvider;
 
@@ -52,9 +51,8 @@ namespace AudioPPM
 
             // set up right channel:
             _ppmProvider = new PpmProvider(channelsCount, ppmProfile, loopbackWaveformat);
-            _waveFormat = new WaveFormatExtensible(loopbackWaveformat.SampleRate, 32, audioChannelCount);
 
-            MultiplexingSampleProvider _multiplexingSampleProvider = new MultiplexingSampleProvider(new ISampleProvider[] { monoLoopbackProvider, _ppmProvider }, _waveFormat);
+            MultiplexingSampleProvider _multiplexingSampleProvider = new MultiplexingSampleProvider(new ISampleProvider[] { monoLoopbackProvider, _ppmProvider }, audioChannelCount);
 
             _multiplexingSampleProvider.ConnectInputToOutput(0, 0);
             _multiplexingSampleProvider.ConnectInputToOutput(1, 1);
