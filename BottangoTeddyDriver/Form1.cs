@@ -39,6 +39,20 @@ namespace BottangoTeddyDriver
             _generator = new PPMWrapper();
         }
 
+        private PpmProfile getActiveProfile()
+        {
+            switch (combo_talkerSelect.SelectedIndex)
+            {
+                case 0:
+                default:
+                    return StandardProfiles.ruxpin;
+                case 1:
+                    return StandardProfiles.goose;
+                case 2:
+                    return StandardProfiles.mickey;
+            }
+        }
+
         private void btnStart_Click(object sender, EventArgs e)
         {
             if (listboxAudioDevices.SelectedIndex == -1)
@@ -48,7 +62,7 @@ namespace BottangoTeddyDriver
             }
             try
             {
-                PpmProfile profile = check_goose.Checked ? StandardProfiles.goose : StandardProfiles.ruxpin;
+                PpmProfile profile = getActiveProfile();
                 _generator.Start(_audioDevices[listboxAudioDevices.SelectedIndex], profile, check_loopback.Checked);
                 _generator.setVolume(track_volume.Value / 100f);
                 SetPlaying(true);
